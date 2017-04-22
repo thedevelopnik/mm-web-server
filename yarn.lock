@@ -48,13 +48,6 @@
     "@types/bluebird" "*"
     "@types/node" "*"
 
-"@types/material-ui@^0.17.2":
-  version "0.17.2"
-  resolved "https://registry.yarnpkg.com/@types/material-ui/-/material-ui-0.17.2.tgz#6d35aec8d2e506fdea162011b34b7217a9d416c8"
-  dependencies:
-    "@types/react" "*"
-    "@types/react-addons-linked-state-mixin" "*"
-
 "@types/mime@*":
   version "0.0.29"
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-0.0.29.tgz#fbcfd330573b912ef59eeee14602bface630754b"
@@ -86,19 +79,9 @@
     "@types/node" "*"
     "@types/pg-types" "*"
 
-"@types/react-addons-linked-state-mixin@*":
-  version "0.14.17"
-  resolved "https://registry.yarnpkg.com/@types/react-addons-linked-state-mixin/-/react-addons-linked-state-mixin-0.14.17.tgz#2e82b5b0882410279a7ab6b675e6f49eb3de8419"
-  dependencies:
-    "@types/react" "*"
-
 "@types/react-tap-event-plugin@^0.0.30":
   version "0.0.30"
   resolved "https://registry.yarnpkg.com/@types/react-tap-event-plugin/-/react-tap-event-plugin-0.0.30.tgz#123f35080412f489b6770c5a65c159ff96654cb5"
-
-"@types/react@*":
-  version "15.0.22"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-15.0.22.tgz#50803cde8d89f60a9b034f2dd0d619bc5f0273b5"
 
 "@types/serve-static@*":
   version "1.7.31"
