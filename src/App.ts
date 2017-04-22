@@ -2,9 +2,6 @@ import * as path from 'path';
 import * as express from 'express';
 import * as logger from 'morgan';
 import * as bodyParser from 'body-parser';
-import * as session from 'express-session';
-import * as pgStore from 'connect-pg-simple';
-import * as pg from 'pg';
 
 class App {
     public express: express.Application;
@@ -19,14 +16,14 @@ class App {
         this.express.use(logger('dev'));
         this.express.use(bodyParser.json());
         this.express.use(bodyParser.urlencoded({ extended: false}));
+        this.express.use(bodyParser.urlencoded({ extended: false }));
+        this.express.use(express.static(path.join(__dirname, '../../dist')));
     }
 
     private routes(): void {
-        let router = express.Router();
+        const router = express.Router();
         router.get('/', function defaultHandler(req, res, next) {
-            res.json({
-                message: 'Hello World!'
-            });
+            res.sendFile(path.join(__dirname, '../build/index.html'));
         });
         this.express.use('/', router);
     }
