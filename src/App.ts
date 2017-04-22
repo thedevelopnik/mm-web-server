@@ -19,15 +19,6 @@ class App {
         this.express.use(logger('dev'));
         this.express.use(bodyParser.json());
         this.express.use(bodyParser.urlencoded({ extended: false}));
-        this.express.use(session({
-            store: new pgStore({
-                pg: pg,
-                conString: process.env.DATABASE_URL,
-                tableName: 'user_sessions'
-            })(session),
-            secret: process.env.SECRET,
-            cookie: {}
-        }));
     }
 
     private routes(): void {
