@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "./node_modules/.bin/gulp",
     "start": "node dist/index",
     "test": "mocha --reporter spec --compilers ts:ts-node/register 'test/**/*.test.ts'"
   },
@@ -31,7 +32,7 @@
     "@types/knex": "^0.0.44",
     "@types/mocha": "^2.2.40",
     "@types/morgan": "^1.7.32",
-    "@types/node": "^7.0.12",
+    "@types/node": "^7.0.13",
     "@types/pg": "^6.1.39",
     "@types/react-tap-event-plugin": "^0.0.30",
     "chai": "^3.5.0",

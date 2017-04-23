@@ -13,15 +13,17 @@
     "noImplicitThis": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "types": [
+      "node"
+    ]
   },
   "include": [
-    "src/**/*.ts",
-    "db/knex.js",
-    "knexfile.js"
+    "src/**/*.ts"
   ],
   "exclude": [
     "node_modules",
-    "build"
+    "build",
+    "db"
   ]
 }

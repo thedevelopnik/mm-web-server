@@ -1,8 +1,21 @@
-export interface IStringKey {
+export interface StringKey {
   [key: string]: any;
 }
 
-export interface IEducator extends IStringKey {
+export interface EducatorRegistrant {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}
+
+export interface SchoolRegistrant {
+  name: string;
+  email: string;
+  password: string;
+}
+
+export interface Educator extends StringKey {
   id: number;
   displayName: string;
   firstName: string;
@@ -32,7 +45,7 @@ export interface IEducator extends IStringKey {
   statesWgt: number;
 }
 
-export interface ISchool extends IStringKey {
+export interface School extends StringKey {
   id: number;
   displayName: string;
   name: string;
@@ -43,7 +56,7 @@ export interface ISchool extends IStringKey {
   description: string;
 }
 
-export interface ISchoolMatchingProfile extends IStringKey {
+export interface SchoolMatchingProfile extends StringKey {
   id: number;
   schoolId: number;
   active: boolean;
@@ -67,7 +80,7 @@ export interface ISchoolMatchingProfile extends IStringKey {
   statesWgt: number;
 }
 
-export interface IMatch extends IStringKey {
+export interface Match extends StringKey {
   id: number;
   schoolMatchingProfileId: number;
   educatorId: number;
