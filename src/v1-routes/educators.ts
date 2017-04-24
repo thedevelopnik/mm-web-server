@@ -1,7 +1,9 @@
 import * as knex from '../../db/knex.js';
 import { EducatorRegistrant, Educator, StringKey } from '../interfaces';
 import * as Promise from 'bluebird';
-import { convertObjectKeysToCamel, convertObjectKeysToSnake } from './helpers';
+import * as bcrypt from 'bcrypt';
+import { merge } from 'ramda';
+import { convertObjectKeysToCamel, convertObjectKeysToSnake, splitAccountCreationObject } from './helpers';
 
 export function getEducatorById(id: number): Promise<Educator[]> {
   return knex('educators').select().where('id', id)
@@ -13,11 +15,17 @@ export function getEducatorById(id: number): Promise<Educator[]> {
   });
 };
 
-export function insertEducator(educator: EducatorRegistrant): Promise<number> {
-  const snakeEducator = convertObjectKeysToSnake(educator);
-  snakeEducator.display_name = `${educator.firstName}${educator.lastName[0]}`;
-  return knex('educators').returning('id').insert(snakeEducator)
-  .then(function returnIds(ids: number[]) {
-    return ids[0];
+export function insertEducator(educator: EducatorRegistrant): PromiseLike<number> {
+  const [login, profile] = splitAccountCreationObject(educator);
+  return bcrypt.hash(educator.password, 10).then(password => {
+    const loginInsert = convertObjectKeysToSnake(merge(login, { type: 'educator', password }));
+    return knex('auth').returning('id').insert(loginInsert) as PromiseLike<number[]>;
+  })
+  .then((ids: number[]) => {
+    const snakeProfile = convertObjectKeysToSnake(merge(profile, {
+      display_name: `${educator.firstName}${educator.lastName[0]}`,
+      id: ids[0],
+    }));
+    return knex('educators').insert(snakeProfile).then(() => ids[0]) as PromiseLike<number>;
   });
 }

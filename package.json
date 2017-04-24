@@ -15,13 +15,23 @@
   "author": "David Sudia",
   "license": "ISC",
   "dependencies": {
+    "@types/bcrypt": "^1.0.0",
+    "@types/cookie-session": "^2.0.32",
+    "@types/cors": "^2.8.1",
+    "@types/ramda": "0.0.7",
+    "@types/react-router": "^4.0.4",
+    "bcrypt": "^1.0.2",
     "body-parser": "^1.17.1",
     "change-case": "^3.0.1",
+    "cookie-session": "^2.0.0-beta.1",
+    "cors": "^2.8.3",
     "debug": "^2.6.3",
     "express": "^4.15.2",
     "knex": "^0.12.9",
+    "log4js": "^1.1.1",
     "morgan": "^1.8.1",
-    "pg": "^6.1.5"
+    "pg": "^6.1.5",
+    "ramda": "^0.23.0"
   },
   "devDependencies": {
     "@types/body-parser": "^1.16.3",

@@ -3,7 +3,7 @@ import * as debug from 'debug';
 
 import App from './App';
 
-debug('ts-express:server')
+debug('ts-express:server');
 
 const port = normalizePort(process.env.PORT || 3001);
 App.set('port', port);
@@ -14,22 +14,28 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 function normalizePort(val: number|string): number|string|boolean {
-    let port = (typeof val === 'string') ? parseInt(val, 10) : val;
-    if (isNaN(port)) return val;
-    else if (port >= 0) return port;
-    else return false;
+    let p = (typeof val === 'string') ? parseInt(val, 10) : val;
+    if (isNaN(p)) {
+        return val;
+    } else if (p >= 0) {
+        return p;
+    } else {
+        return false;
+    }
 }
 
 function onError(error: NodeJS.ErrnoException): void {
-    if (error.syscall !== 'listen') throw error;
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
     let bind = (typeof port === 'string') ? 'Pipe' + port : 'Port ' + port;
-    switch(error.code) {
+    switch (error.code) {
         case 'EACCES':
-            console.error(`${bind} requires elevated privileges`);
+            console.error(`${bind} requires elevated privileges`); // tslint:disable-line
             process.exit(1);
             break;
         case 'EADDRINUSE':
-            console.error(`${bind} is already in use`);
+            console.error(`${bind} is already in use`); // tslint:disable-line
             process.exit(1);
             break;
         default:
@@ -39,6 +45,6 @@ function onError(error: NodeJS.ErrnoException): void {
 
 function onListening(): void {
     let addr = server.address();
-    let bind = (typeof addr === 'string') ? `pipe ${addr}`: `port ${addr.port}`;
+    let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
     debug(`Listening on ${bind}`);
 }

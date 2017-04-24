@@ -4,7 +4,7 @@
     "module": "commonjs",
     "outDir": "dist",
     "allowJs": true,
-    "lib": ["es6"],
+    "lib": ["es7"],
     "sourceMap": true,
     "moduleResolution": "node",
     "rootDir": "src",
@@ -15,7 +15,8 @@
     "strictNullChecks": true,
     "noUnusedLocals": true,
     "types": [
-      "node"
+      "node",
+      "cookie-session"
     ]
   },
   "include": [
