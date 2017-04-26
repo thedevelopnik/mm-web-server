@@ -6,7 +6,7 @@ import * as cors from 'cors';
 import cookieSession = require('cookie-session');
 import AuthRouter from './v1-routes/auth';
 
-const whitelist = ['http://localhost:3000'];
+const whitelist = ['http://localhost:3000', 'http://localhost:3001'];
 
 class App {
     public express: express.Application;
@@ -21,11 +21,11 @@ class App {
         this.express.use(logger('dev'));
         this.express.use(cors({
             origin (origin, callback) {
-                // if (whitelist.includes(origin)) {
+                if (whitelist.includes(origin)) {
                     callback(null, true);
-                // } else {
-                //     callback(new Error('Not allowed by CORS'));
-                // }
+                } else {
+                    callback(new Error('Not allowed by CORS'));
+                }
             },
             credentials: true
         }));

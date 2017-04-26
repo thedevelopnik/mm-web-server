@@ -8,12 +8,10 @@ interface LoginDetails {
 }
 
 export function convertObjectKeysToCamel(obj: StringKey): StringKey {
-  for (let key in obj) {
-    if (typeof key === 'string') {
-      key = camel(key);
-    }
-  }
-  return obj;
+  return Reflect.ownKeys(obj).reduce((camelObject: StringKey, key: string) => {
+    camelObject[camel(key)] = obj[key];
+    return camelObject;
+  },                                  {});
 }
 
 export function convertObjectKeysToSnake(obj: StringKey): StringKey {

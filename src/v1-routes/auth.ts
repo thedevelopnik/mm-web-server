@@ -5,7 +5,7 @@ import * as knex from '../../db/knex.js';
 import { EducatorRegistrant, SchoolRegistrant, Match, School, Educator, SchoolMatchingProfile } from './../interfaces';
 import { insertSchool } from './schools';
 import { insertEducator } from './educators';
-import { lowercaseEmail } from './helpers';
+import { lowercaseEmail, convertObjectKeysToCamel } from './helpers';
 import getLogger from '../log';
 
 const logger = getLogger('auth');
@@ -107,9 +107,9 @@ export class AuthRouter {
     .then(([profile, matches, matchingProfiles]: [ School[], Match[], SchoolMatchingProfile[]]) => {
       req.session.id = loginProfile.id;
       res.status(200).send({
-        profile: omit(['id'],  profile[0]),
-        matches,
-        matchingProfile: matchingProfiles,
+        profile: convertObjectKeysToCamel(omit(['id'],  profile[0])),
+        matches: matches.map(convertObjectKeysToCamel),
+        matchingProfile: matchingProfiles.map(convertObjectKeysToCamel),
       });
     })
     .catch(error => {
@@ -154,9 +154,9 @@ export class AuthRouter {
       const sanitizedMatchingProfile = pick(matchingKeys, profile);
       req.session.id = profile.id;
       res.status(200).send({
-        profile: sanitizedProfile,
-        matches,
-        matchingProfile: [sanitizedMatchingProfile],
+        profile: convertObjectKeysToCamel(sanitizedProfile),
+        matches: matches.map(convertObjectKeysToCamel),
+        matchingProfile: [convertObjectKeysToCamel(sanitizedMatchingProfile)],
       });
     })
     .catch(error => {
