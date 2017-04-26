@@ -4,7 +4,7 @@
     "module": "commonjs",
     "outDir": "dist",
     "allowJs": true,
-    "lib": ["es6"],
+    "lib": ["es7"],
     "sourceMap": true,
     "moduleResolution": "node",
     "rootDir": "src",
@@ -13,15 +13,18 @@
     "noImplicitThis": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "types": [
+      "node",
+      "cookie-session"
+    ]
   },
   "include": [
-    "src/**/*.ts",
-    "db/knex.js",
-    "knexfile.js"
+    "src/**/*.ts"
   ],
   "exclude": [
     "node_modules",
-    "build"
+    "build",
+    "db"
   ]
 }
