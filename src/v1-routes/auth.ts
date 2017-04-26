@@ -68,18 +68,22 @@ export class AuthRouter {
 
   logout(req: Request, res: Response, next: NextFunction) {
     req.session = <any> null;
-    res.status(200).send('ok');
+    res.status(200).send('LOGGED OUT');
   }
 
   ping(req: Request, res: Response, next: NextFunction) {
-    res.status(200).send(`ID ${req.session.id}`);
+    if (req.session.id) {
+      res.status(200).send(`OK`);
+    } else {
+      res.status(401).send('UNAUTHORIZED');
+    }
   }
 
 
   init() {
     this.router.post('/new-user', this.newUser.bind(this));
     this.router.post('/login', this.login.bind(this));
-    this.router.post('/logout', this.logout.bind(this));
+    this.router.get('/logout', this.logout.bind(this));
     this.router.get('/ping', this.ping.bind(this));
   }
 
@@ -94,13 +98,13 @@ export class AuthRouter {
                     .whereNot('school_denial', true))
         .innerJoin('educators', 'matches.educator_id', 'educators.id')
         .select([
-          'matches.id',
-          'matches.percentage',
-          'matches.educator_confirmation',
-          'matches.school_confirmation',
-          'educators.display_name',
-          'educators.avatar_url',
-          'educators.description',
+          'matches.id as id',
+          'matches.percentage as percentage',
+          'matches.school_confirmation as my_confirmation',
+          'matches.educator_confirmation as their_confirmation',
+          'educators.display_name as display_name',
+          'educators.avatar_url as avatar_url',
+          'educators.description as description',
         ]),
       knex('school_matching_profiles').where('school_id', loginProfile.id),
     ])
@@ -109,7 +113,7 @@ export class AuthRouter {
       res.status(200).send({
         profile: convertObjectKeysToCamel(omit(['id'],  profile[0])),
         matches: matches.map(convertObjectKeysToCamel),
-        matchingProfile: matchingProfiles.map(convertObjectKeysToCamel),
+        matchingProfiles: matchingProfiles.map(convertObjectKeysToCamel),
       });
     })
     .catch(error => {
@@ -129,13 +133,13 @@ export class AuthRouter {
                     'matches.school_matching_profile_id', 'school_matching_profiles.id')
         .innerJoin('schools', 'school_matching_profiles.school_id', 'schools.id')
         .select([
-          'matches.id',
-          'matches.percentage',
-          'matches.educator_confirmation',
-          'matches.school_confirmation',
-          'schools.display_name',
-          'schools.avatar_url',
-          'schools.description',
+          'matches.id as id',
+          'matches.percentage as percentage',
+          'matches.educator_confirmation as my_confirmation',
+          'matches.school_confirmation as their_confirmation',
+          'schools.display_name as display_name',
+          'schools.avatar_url as avatar_url',
+          'schools.description as description',
         ]),
     ])
     .then(([profile, matches]: [ Educator, Match[] ]) => {
@@ -156,7 +160,7 @@ export class AuthRouter {
       res.status(200).send({
         profile: convertObjectKeysToCamel(sanitizedProfile),
         matches: matches.map(convertObjectKeysToCamel),
-        matchingProfile: [convertObjectKeysToCamel(sanitizedMatchingProfile)],
+        matchingProfiles: [convertObjectKeysToCamel(sanitizedMatchingProfile)],
       });
     })
     .catch(error => {
