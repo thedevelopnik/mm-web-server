@@ -111,7 +111,10 @@ export class AuthRouter {
     .then(([profile, matches, matchingProfiles]: [ School[], Match[], SchoolMatchingProfile[]]) => {
       req.session.id = loginProfile.id;
       res.status(200).send({
-        profile: convertObjectKeysToCamel(omit(['id'],  profile[0])),
+        profile: convertObjectKeysToCamel(omit(['id'],  merge(profile[0], {
+          member_type: loginProfile.type,
+          email: loginProfile.email,
+        }))),
         matches: matches.map(convertObjectKeysToCamel),
         matchingProfiles: matchingProfiles.map(convertObjectKeysToCamel),
       });
@@ -154,7 +157,10 @@ export class AuthRouter {
         'traits', 'traits_wgt',
         'states', 'states_wgt',
       ];
-      const sanitizedProfile = merge(omit([...matchingKeys, 'id'], profile), { email: req.body.email });
+      const sanitizedProfile = merge(omit([...matchingKeys, 'id'], profile), {
+        member_type: loginProfile.type,
+        email: loginProfile.email,
+      });
       const sanitizedMatchingProfile = pick(matchingKeys, profile);
       req.session.id = profile.id;
       res.status(200).send({
