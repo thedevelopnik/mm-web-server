@@ -11,14 +11,14 @@ export function convertObjectKeysToCamel(obj: StringKey): StringKey {
   return Reflect.ownKeys(obj).reduce((camelObject: StringKey, key: string) => {
     camelObject[camel(key)] = obj[key];
     return camelObject;
-  },                                  {});
+  }, {});
 }
 
 export function convertObjectKeysToSnake(obj: StringKey): StringKey {
   return Reflect.ownKeys(obj).reduce((snakeObject: StringKey, key: string) => {
     snakeObject[snake(key)] = obj[key];
     return snakeObject;
-  },                                 {});
+  }, {});
 }
 
 

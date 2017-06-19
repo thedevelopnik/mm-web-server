@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import * as bcrypt from 'bcrypt';
 import { omit, pick, merge } from 'ramda';
-import * as knex from '../../db/knex.js';
+import * as knex from '../db/knex.js';
 import { EducatorRegistrant, SchoolRegistrant, Match, School, Educator, SchoolMatchingProfile } from './../interfaces';
 import { insertSchool } from './schools';
 import { insertEducator } from './educators';
@@ -33,7 +33,7 @@ export class AuthRouter {
     if (isEducatorRegistrant(req.body)) {
       insertEducator(req.body).then(id => {
         req.session.id = id;
-        res.status(201).send('id');
+        res.status(201).send('ok');
       });
     } else {
       insertSchool(req.body).then(id => {
@@ -60,7 +60,7 @@ export class AuthRouter {
         }
       });
     })
-    .catch(error => {
+    .catch((error: string) => {
       logger.error(error);
       res.status(500).send('an error occured, please contact support');
     });

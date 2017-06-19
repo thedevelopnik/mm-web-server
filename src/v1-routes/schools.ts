@@ -1,4 +1,4 @@
-import * as knex from '../../db/knex.js';
+import * as knex from '../db/knex.js';
 import { School, StringKey, SchoolRegistrant } from './../interfaces';
 import * as bcrypt from 'bcrypt';
 import { merge } from 'ramda';

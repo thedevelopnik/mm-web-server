@@ -1,4 +1,4 @@
-import * as knex from '../../db/knex.js';
+import * as knex from '../db/knex.js';
 import { EducatorRegistrant, Educator, StringKey } from '../interfaces';
 import * as Promise from 'bluebird';
 import * as bcrypt from 'bcrypt';
@@ -13,7 +13,7 @@ export function getEducatorById(id: number): Promise<Educator[]> {
     });
     return educatorArray as Educator[];
   });
-};
+}
 
 export function insertEducator(educator: EducatorRegistrant): PromiseLike<number> {
   const [login, profile] = splitAccountCreationObject(educator);
