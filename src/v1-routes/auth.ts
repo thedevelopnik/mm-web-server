@@ -60,52 +60,51 @@ export class AuthRouter {
         });
     }
 
-    login(req: Request, res: Response, next: NextFunction, q: AuthQuerier = new AuthQuerier()) {
+    login(req: Request, res: Response, next?: NextFunction, q: AuthQuerier = new AuthQuerier()) {
         if (!req.body.email || !req.body.password) {
             res.status(400).json(MissingParameters);
             return;
         }
-        if (req.body.email.length > 50 || req.body.password.length > 50) {
-            res.status(400).json(InvalidParameters);
-            return;
-        } 
+        if (!validator.isEmail(req.body.email)) {
+            return res.status(400).json(InvalidParameters);
+        }
+        if (!schema.validate(req.body.password)) {
+            return res.status(400).json(InvalidParameters);
+        }
         const loginDetails = lowercaseEmail(req.body);
         return q.findMemberByEmail(loginDetails.email)
         .then((member: Registrant) => {
             const valid = bcrypt.compareSync(loginDetails.password, member.password);
             if (!valid) {
-                res.status(401).json(BadLogin);
-                return;
+                return res.status(401).json(BadLogin);
             }
             const authToken = this.makeToken((<string> member.id), member.memberType);
-            res.status(200).send({authToken});
-            return;
+            return res.status(200).send({authToken});
         })
         .catch((err: string) => {
             logger.error(err);
-            res.status(401).json(BadLogin);
-            return;
+            return res.status(401).json(BadLogin);
         });
     }
 
-    changePassword(req: SecureRequest, res: Response, next: NextFunction, q: AuthQuerier = new AuthQuerier()) {
+    changePassword(req: SecureRequest, res: Response, next?: NextFunction, q: AuthQuerier = new AuthQuerier()) {
+        if (!req.body.oldPassword || !req.body.newPassword) {
+            return res.status(400).json(MissingParameters);
+        }
         return q.findMemberPasswordById(req.user.id)
         .then((password: string) => {
-            const valid = bcrypt.compare(req.body.oldPassword, password);
+            const valid = bcrypt.compareSync(req.body.oldPassword, password);
             if (!valid) {
-                res.status(401).send(BadLogin);
-                return;
+                return res.status(401).json(BadLogin);
             }
             return q.updatePassword(req.user.id, req.body.newPassword)
             .then(() => {
-                res.status(204);
-                return;
+                return res.status(204);
             });
         })
         .catch((err: string) => {
             logger.error(err);
-            res.status(500).send(UpdatePasswordFailure);
-            return;
+            return res.status(500).json(UpdatePasswordFailure);
         });
     }
 

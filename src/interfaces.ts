@@ -49,7 +49,7 @@ export interface Educator extends StringKey {
 export interface SecureRequest extends Request, Express.Request {
     user: {
         id: string;
-        memberType: number;
+        memberType: string;
     };
 }
 
