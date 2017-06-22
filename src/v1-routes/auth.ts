@@ -1,13 +1,12 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import * as bcrypt from 'bcrypt';
 // import { omit, pick, merge } from 'ramda';
-import { Registrant, TokenContents } from './../interfaces';
+import { Registrant, SecureRequest } from './../interfaces';
 import { AuthQuerier } from '../queries/auth';
 import {
     BadLogin,
-    FindMemberFailure,
     InsertMemberFailure,
-    InvalidToken,
+    InvalidParameters,
     MissingParameters,
     UpdatePasswordFailure
 } from './errors';
@@ -16,13 +15,6 @@ import getLogger from '../log';
 import * as jwt from 'jsonwebtoken';
 
 const logger = getLogger('auth');
-
-// interface LoginProfile {
-//   id: number;
-//   email: string;
-//   password: string;
-//   type: string;
-// }
 
 export class AuthRouter {
     router: Router;
@@ -36,86 +28,81 @@ export class AuthRouter {
         const user: Registrant = req.body;
         if (!user.email || !user.password || !user.memberType) {
             res.status(400).send(MissingParameters);
-            return next();
+            return;
         }
+        if (user.email.length > 50 || user.password.length > 50) {
+            res.status(400).send(InvalidParameters);
+            return;
+        } 
         return q.insertNewUser(user)
         .then((id: string) => {
             const authToken = this.makeToken(id, user.memberType);
             res.status(201).send({authToken});
-            return next();
+            return;
         })
         .catch((err: string) => {
             logger.error(err);
             res.status(500).send(InsertMemberFailure);
-            return next();
+            return;
         });
     }
 
     login(req: Request, res: Response, next: NextFunction, q: AuthQuerier = new AuthQuerier()) {
         if (!req.body.email || !req.body.password) {
             res.status(400).send(MissingParameters);
-            return next();
+            return;
         }
+        if (req.body.email.length > 50 || req.body.password.length > 50) {
+            res.status(400).send(InvalidParameters);
+            return;
+        } 
         const loginDetails = lowercaseEmail(req.body);
         return q.findMemberByEmail(loginDetails.email)
         .then((member: Registrant) => {
             const valid = bcrypt.compareSync(loginDetails.password, member.password);
             if (!valid) {
                 res.status(401).send(BadLogin);
-                return next();
+                return;
             }
             const authToken = this.makeToken((<string> member.id), member.memberType);
             res.status(200).send({authToken});
-            return next();
+            return;
         })
         .catch((err: string) => {
             logger.error(err);
-            res.status(500).send(FindMemberFailure);
-            return next();
+            res.status(401).send(BadLogin);
+            return;
         });
     }
 
-    changePassword(req: Request, res: Response, next: NextFunction, q: AuthQuerier = new AuthQuerier()) {
-        const authToken = req.header('authToken');
-        let decoded: TokenContents;
-        try {
-            decoded = (<TokenContents> jwt.verify(
-                authToken,
-                process.env.JWT_SECRET || 'shhhh',
-                {maxAge: '1 day'}
-            ));
-        } catch (err) {
-            logger.error(err);
-            res.status(401).send({InvalidToken});
-            return next();
-        }
-        return q.findMemberPasswordById(decoded.id)
+    changePassword(req: SecureRequest, res: Response, next: NextFunction, q: AuthQuerier = new AuthQuerier()) {
+        return q.findMemberPasswordById(req.user.id)
         .then((password: string) => {
             const valid = bcrypt.compare(req.body.oldPassword, password);
             if (!valid) {
                 res.status(401).send(BadLogin);
-                return next();
+                return;
             }
-            return q.updatePassword(decoded.id, req.body.newPassword)
+            return q.updatePassword(req.user.id, req.body.newPassword)
             .then(() => {
                 res.status(204);
-                return next();
+                return;
             });
         })
         .catch((err: string) => {
             logger.error(err);
             res.status(500).send(UpdatePasswordFailure);
-            return next();
+            return;
         });
     }
 
     makeToken(id: string, memberType: number): string {
-        const signingObject = Object.create({}, {
-            id,
-            memberType
+        const payload = Object.assign({}, {
+            id: id,
+            memberType: memberType
         });
         const authToken = jwt.sign(
-            signingObject,
+            payload,
             process.env.JWT_SECRET || 'shhhh',
             { expiresIn: '1 day' }
         );
@@ -211,6 +198,4 @@ export class AuthRouter {
     // }
 }
 
-const authRouter = new AuthRouter();
-
-export default authRouter.router;
+export const authRouter = new AuthRouter().router;

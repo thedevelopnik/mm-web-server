@@ -34,7 +34,7 @@ describe('AuthQuerier', function() {
     });
 
     describe('insertNewUser', function() {
-        it('inserts a new user into the database and return a uuid', function() {
+        xit('inserts a new user into the database and return a uuid', function() {
             const newUser = {
                 email: 'test@test.com',
                 password: 'TestPassword!1',
@@ -49,7 +49,7 @@ describe('AuthQuerier', function() {
     });
 
     describe('findMemberByEmail', function() {
-        it('gets a members auth profile by email', function() {
+        xit('gets a members auth profile by email', function() {
             const email = 'dsudia@gmail.com';
             return q.findMemberByEmail(email)
             .then((member: Registrant) => {
@@ -63,7 +63,7 @@ describe('AuthQuerier', function() {
     });
 
     describe('findMemberPasswordById', function() {
-        it('gets a members password using their id', function() {
+        xit('gets a members password using their id', function() {
             const id = 'b6dc01b4-f1dd-4533-89c5-ca10ed84e72c';
             return q.findMemberPasswordById(id)
             .then((password: string) => {
@@ -75,7 +75,7 @@ describe('AuthQuerier', function() {
     });
 
     describe('updatePassword', function() {
-        it('updates a password correctly', function() {
+        xit('updates a password correctly', function() {
             const id = 'b6dc01b4-f1dd-4533-89c5-ca10ed84e72c';
             const hash = bcrypt.hashSync('ANewPassword!1', 10);
             return q.updatePassword(id, hash)

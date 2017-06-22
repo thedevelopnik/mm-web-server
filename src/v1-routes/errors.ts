@@ -12,8 +12,13 @@ export const MissingParameters: ErrorResponse = {
 };
 
 export const InvalidToken: ErrorResponse = {
-    code: 1003,
+    code: 1002,
     message: 'authorization token is invalid'
+};
+
+export const InvalidParameters: ErrorResponse = {
+    code: 1003,
+    message: 'parameters violate rules'
 };
 
 // Database Errors

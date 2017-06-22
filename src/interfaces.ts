@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 export interface StringKey {
     [key: string]: any;
 }
@@ -7,11 +9,6 @@ export interface Registrant {
     email: string;
     password: string;
     memberType: number;
-}
-
-export interface TokenContents {
-    id: string;
-    memberType: string;
 }
 
 export interface ErrorResponse {
@@ -47,6 +44,13 @@ export interface Educator extends StringKey {
     traitsWgt: number;
     states: number[];
     statesWgt: number;
+}
+
+export interface SecureRequest extends Request, Express.Request {
+    user: {
+        id: string;
+        memberType: number;
+    };
 }
 
 export interface School extends StringKey {
