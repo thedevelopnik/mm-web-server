@@ -1,13 +1,12 @@
 import {} from 'mocha';
 import * as chai from 'chai';
-import { knex } from '../queries/db';
 import * as bcrypt from 'bcrypt';
-import { Registrant } from '../interfaces';
 
 chai.should();
 
-// import { knex } from '../src/queries/db';
-import { AuthQuerier } from '../queries/auth';
+import { knex } from '../../queries/db';
+import { Registrant } from '../../interfaces';
+import { AuthQuerier } from '../../queries/auth';
 
 describe('AuthQuerier', function() {
     const q = new AuthQuerier();
