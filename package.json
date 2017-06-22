@@ -22,13 +22,17 @@
     "debug": "^2.6.3",
     "express": "^4.15.3",
     "express-jwt": "^5.3.0",
+    "isemail": "^3.0.0",
     "jsonwebtoken": "^7.4.1",
     "knex": "^0.12.9",
     "log4js": "^1.1.1",
     "morgan": "^1.8.1",
+    "node-mocks-http": "^1.6.3",
+    "password-validator": "^3.0.0",
     "pg": "^6.4.0",
     "ramda": "^0.23.0",
-    "uuid": "^3.1.0"
+    "uuid": "^3.1.0",
+    "validator": "^7.1.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^1.0.0",
@@ -49,7 +53,9 @@
     "@types/ramda": "0.0.7",
     "@types/react-router": "^4.0.4",
     "@types/react-tap-event-plugin": "^0.0.30",
+    "@types/sinon": "^2.3.1",
     "@types/uuid": "^3.0.0",
+    "@types/validator": "^6.2.0",
     "chai": "^3.5.0",
     "chai-http": "^3.0.0",
     "gulp": "^3.9.1",

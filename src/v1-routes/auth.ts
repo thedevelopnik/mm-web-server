@@ -13,6 +13,18 @@ import {
 import { lowercaseEmail } from './helpers';
 import getLogger from '../log';
 import * as jwt from 'jsonwebtoken';
+import * as validator from 'validator';
+
+const passValidator = require('password-validator');
+
+const schema = new passValidator();
+schema.is().min(8)
+    .is().max(50)
+    .has().uppercase()
+    .has().lowercase()
+    .has().digits()
+    .has().symbols()
+    .has().not().spaces();
 
 const logger = getLogger('auth');
 
@@ -24,16 +36,18 @@ export class AuthRouter {
         this.init();
     }
 
-    newUser(req: Request, res: Response, next: NextFunction, q: AuthQuerier = new AuthQuerier()) {
+    newUser(req: Request, res: Response, next?: NextFunction, q: AuthQuerier = new AuthQuerier()) {
         const user: Registrant = req.body;
+        user.memberType = (<number> user.memberType);
         if (!user.email || !user.password || !user.memberType) {
-            res.status(400).send(MissingParameters);
-            return;
+            return res.status(400).json(MissingParameters);
         }
-        if (user.email.length > 50 || user.password.length > 50) {
-            res.status(400).send(InvalidParameters);
-            return;
-        } 
+        if (!validator.isEmail(user.email)) {
+            return res.status(400).json(InvalidParameters);
+        }
+        if (!schema.validate(user.password)) {
+            return res.status(400).json(InvalidParameters);
+        }
         return q.insertNewUser(user)
         .then((id: string) => {
             const authToken = this.makeToken(id, user.memberType);
@@ -42,18 +56,17 @@ export class AuthRouter {
         })
         .catch((err: string) => {
             logger.error(err);
-            res.status(500).send(InsertMemberFailure);
-            return;
+            return res.status(500).json(InsertMemberFailure);
         });
     }
 
     login(req: Request, res: Response, next: NextFunction, q: AuthQuerier = new AuthQuerier()) {
         if (!req.body.email || !req.body.password) {
-            res.status(400).send(MissingParameters);
+            res.status(400).json(MissingParameters);
             return;
         }
         if (req.body.email.length > 50 || req.body.password.length > 50) {
-            res.status(400).send(InvalidParameters);
+            res.status(400).json(InvalidParameters);
             return;
         } 
         const loginDetails = lowercaseEmail(req.body);
@@ -61,7 +74,7 @@ export class AuthRouter {
         .then((member: Registrant) => {
             const valid = bcrypt.compareSync(loginDetails.password, member.password);
             if (!valid) {
-                res.status(401).send(BadLogin);
+                res.status(401).json(BadLogin);
                 return;
             }
             const authToken = this.makeToken((<string> member.id), member.memberType);
@@ -70,7 +83,7 @@ export class AuthRouter {
         })
         .catch((err: string) => {
             logger.error(err);
-            res.status(401).send(BadLogin);
+            res.status(401).json(BadLogin);
             return;
         });
     }
