@@ -1,0 +1,842 @@
+swagger: '2.0'
+info:
+  version: '1'
+  title: 'MM'
+  description: 'first iteration'
+
+securityDefinitions:
+  JWT:
+    description: JWT token containing the user's ID in the body.
+    type: apiKey
+    name: authToken
+    in: header
+
+paths:
+  /auth:
+    post:
+      description: Creates a user in the system. Returns an auth token.
+      tags:
+      - auth
+      parameters: 
+      - name: credentials
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            email:
+              type: string
+              format: email
+            password:
+              type: string
+      responses:
+        201:
+          description: success
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+        422: 
+          $ref: '#/responses/422'
+    get:
+      description: Logs a user in. Returns an auth token.
+      tags:
+      - auth
+      parameters:
+      - name: email
+        in: query
+        required: true
+        type: string
+      - name: password
+        in: query
+        required: true
+        type: string
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+        422: 
+          $ref: '#/responses/422'
+  /educators/me:
+    post:
+      description: Creates a personal profile for an educator.
+      tags:
+      - educators
+      security:
+      - JWT: []
+      parameters:
+      - name: educatorProfile
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            firstName:
+              type: string
+            lastName:
+              type: string
+            displayName:
+              type: string
+            email:
+              type: string
+              format: email
+            avatarUrl:
+              type: string
+              format: url
+            description:
+              type: string
+      responses:
+        201:
+          description: success
+          schema:
+            type: object
+            properties:
+              firstName:
+                type: string
+              lastName:
+                type: string
+              displayName:
+                type: string
+              email:
+                type: string
+                format: email
+              avatarUrl:
+                type: string
+                format: url
+              description:
+                type: string
+        422: 
+          $ref: '#/responses/422'
+    get:
+      description: Gets the personal profile of an educator.
+      tags:
+      - educators
+      security:
+      - JWT: []
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              firstName:
+                type: string
+              lastName:
+                type: string
+              displayName:
+                type: string
+              email:
+                type: string
+                format: email
+              avatarUrl:
+                type: string
+                format: url
+              description:
+                type: string
+        422: 
+          $ref: '#/responses/422'
+        401:
+          $ref: '#/responses/401'
+    put:
+      description: Updates the personal profile of an educator. Returns the updated profile on success.
+      tags:
+      - educators
+      security:
+      - JWT: []
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              firstName:
+                type: string
+              lastName:
+                type: string
+              email:
+                type: string
+              description:
+                type: string
+        422: 
+          $ref: '#/responses/422'
+        401:
+          $ref: '#/responses/401'
+    delete:
+      description: Deactivates a user.
+      tags:
+      - educators
+      parameters:
+      - name: authenticationToken
+        description: A JWT that must contain the users UUID
+        in: header
+        type: string
+        required: true
+      responses:
+        204:
+          description: success
+  /educators/other:
+    get:
+      description: Gets limited profile of an educator member other than the user.
+      tags:
+      - educators
+      security:
+      - JWT: []
+      parameters:
+      - name: id
+        description: UUID of other member
+        in: query
+        type: string
+        required: true
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              displayName:
+                type: string
+              avatarUrl:
+                type: string
+                format: url
+              description:
+                type: string
+        422: 
+          $ref: '#/responses/422'
+        401:
+          $ref: '#/responses/401'
+  /educators/other/many:
+    get:
+      description: Gets limited profile of a list of educator members other than the user.
+      tags:
+      - educators
+      security:
+      - JWT: []
+      parameters:
+      - name: ids
+        in: query
+        description: list of ids of profiles to get
+        required: true
+        type: array
+        items:
+          type: string
+      responses:
+        200:
+          description: success
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                displayName:
+                  type: string
+                avatarUrl:
+                  type: string
+                  format: url
+                description:
+                  type: string
+  /educators/avatar:
+    post:
+      description: Adds an image avatar to the user's profile.
+      tags:
+      - educators
+      security:
+      - JWT: []
+      consumes:
+      - multipart/form-data
+      parameters:
+      - name: image
+        in: formData
+        required: true
+        type: file
+      responses:
+        201:
+          description: success
+          schema:
+            type: object
+            properties:
+              avatarUrl:
+                type: string
+        401: 
+          $ref: '#/responses/401'
+        415:
+          $ref: '#/responses/415'
+    put:
+      description: Updates the image avatar for a user's profile.
+      tags:
+      - educators
+      security:
+      - JWT: []
+      consumes:
+      - multipart/form-data
+      parameters:
+      - name: image
+        in: formData
+        required: true
+        type: file
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              avatarUrl:
+                type: string
+        401: 
+          $ref: '#/responses/401'
+        415:
+          $ref: '#/responses/415'
+  /schools/me:
+    post:
+      description: Creates a user profile for a school. Returns the profile.
+      tags:
+      - schools
+      security:
+      - JWT: []
+      parameters:
+      - name: schoolProfile
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+            email:
+              type: string
+            avatarUrl:
+              type: string
+            description:
+              type: string
+      responses:
+        201:
+          description: success
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              email:
+                type: string
+              avatarUrl:
+                type: string
+              description:
+                type: string
+        422: 
+          $ref: '#/responses/422'
+    get:
+      description: Gets the user profile data for a school.
+      tags:
+      - schools
+      security:
+      - JWT: []
+      parameters:
+      - name: fields
+        in: query
+        type: string
+        required: false
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              displayName:
+                type: string
+              email:
+                type: string
+                format: email
+              avatarUrl:
+                type: string
+                format: url
+              description:
+                type: string
+        422: 
+          $ref: '#/responses/422'
+        401:
+          $ref: '#/responses/401'
+    put:
+      description: Updates the user profile data for a school. Returns the updated data.
+      tags:
+      - schools
+      security:
+      - JWT: []
+      parameters:
+      - name: schoolProfile
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+            email:
+              type: string
+            avatarUrl:
+              type: string
+            description:
+              type: string
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              email:
+                type: string
+              description:
+                type: string
+        422: 
+          $ref: '#/responses/422'
+        401:
+          $ref: '#/responses/401'
+    delete:
+      description: Deactivates a school user.
+      tags:
+      - schools
+      security:
+      - JWT: []
+      parameters:
+      - $ref: '#/parameters/AuthToken'
+      responses:
+        204:
+          description: success
+  /schools/other:
+    get:
+      description: Gets limited profile of a school member other than the user.
+      tags:
+      - schools
+      security:
+      - JWT: []
+      parameters:
+      - name: id
+        description: UUID of other member
+        in: query
+        type: string
+        required: true
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              displayName:
+                type: string
+              avatarUrl:
+                type: string
+                format: url
+              description:
+                type: string
+        422: 
+          $ref: '#/responses/422'
+        401:
+          $ref: '#/responses/401'
+  /schools/other/many:
+    get:
+      description: Gets limited profile of a list of school members other than the user.
+      tags:
+      - schools
+      security:
+      - JWT: []
+      parameters:
+      - name: ids
+        description: List of ids of other members
+        in: query
+        required: true
+        type: array
+        items:
+          type: string
+      responses:
+        200:
+          description: success
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                displayName:
+                  type: string
+                avatarUrl:
+                  type: string
+                  format: url
+                description:
+                  type: string
+        422: 
+          $ref: '#/responses/422'
+        401:
+          $ref: '#/responses/401'
+  /schools/avatar:
+    post:
+      description: Adds an image avatar to a school user's profile.
+      tags:
+      - schools
+      security:
+      - JWT: []
+      consumes:
+      - multipart/form-data
+      parameters:
+      - name: image
+        in: formData
+        required: true
+        type: file
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              avatarUrl:
+                type: string
+        401:
+          $ref: '#/responses/401'
+        415:
+          $ref: '#/responses/415'
+    put:
+      description: Updates the image avatar of a school user's profile.
+      tags:
+      - schools
+      security:
+      - JWT: []
+      consumes:
+      - multipart/form-data
+      parameters:
+      - name: image
+        in: formData
+        required: true
+        type: file
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              avatarUrl:
+                type: string
+        401:
+          $ref: '#/responses/401'
+        415:
+          $ref: '#/responses/415'
+  /password:
+    put:
+      description: Changes a user's password.
+      tags:
+      - auth
+      security:
+      - JWT: []
+      parameters:
+        - name: oldPassword
+          in: query
+          type: string
+          required: true
+        - name: newPassword
+          in: query
+          type: string
+          required: true
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+        422: 
+          $ref: '#/responses/422'
+        401:
+          $ref: '#/responses/401'
+  /match-profiles:
+    post:
+      description: Creates a matching profile for a user.
+      tags:
+      - match-profiles
+      security:
+      - JWT: []
+      parameters:
+      - name: matchingProfile
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/MatchingProfile'
+      responses:
+        200:
+          description: success
+          schema:
+            $ref: '#/definitions/MatchingProfile'
+        422: 
+          $ref: '#/responses/422'
+        401:
+          $ref: '#/responses/401'
+    get:
+      description: Gets a matching profile by id.
+      tags:
+      - match-profiles
+      parameters:
+      - $ref: '#/parameters/AuthToken'
+      - name: id
+        in: query
+        required: true
+        type: string
+      responses:
+        201:
+          description: success
+          schema:
+            $ref: '#/definitions/MatchingProfile'
+        422: 
+          $ref: '#/responses/422'
+        401:
+          $ref: '#/responses/401'
+    put:
+      description: Updates a matching profile by id.
+      tags:
+      - match-profiles
+      security:
+      - JWT: []
+      parameters:
+      - name: data
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/MatchingProfile'
+      responses:
+        200:
+          description: success
+          schema:
+            $ref: '#/definitions/MatchingProfile'
+        422: 
+          $ref: '#/responses/422'
+        401:
+          $ref: '#/responses/401'
+    delete:
+      description: Deactivates a matching profile from being analyzed.
+      tags:
+      - match-profiles
+      security:
+      - JWT: []
+      parameters:
+      - name: id
+        in: query
+        required: true
+        type: string
+      responses:
+        204:
+          description: success
+        422: 
+          $ref: '#/responses/422'
+        401:
+          $ref: '#/responses/401'
+  /match-profiles/list:
+    get:
+      description: Gets a list of ids of matching profiles for a given user.
+      tags:
+      - match-profiles
+      security:
+      - JWT: []
+      responses:
+        200:
+          description: success
+          schema:
+            type: array
+            items:
+              type: string
+        401:
+          $ref: '#/responses/401'
+  /match-profiles/all:
+    get:
+      description: Gets the objects of all matching profiles for a given user.
+      tags:
+      - match-profiles
+      security:
+      - JWT: []
+      responses:
+        200:
+          description: success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/MatchingProfile'
+        401:
+          $ref: '#/responses/401'
+  /matches/potential:
+    get:
+      description: Gets a list of user ids of potential matches for a given user.
+      tags:
+      - matches
+      security:
+      - JWT: []
+      responses:
+        200:
+          description: success
+          schema:
+            type: array
+            items:
+              type: string
+        401:
+          $ref: '#/responses/401'
+  /matches/confirmed:
+    get:
+      description: Gets a list of user ids of confirmed matches for a given user.
+      tags:
+      - matches
+      security:
+      - JWT: []
+      responses:
+        200:
+          description: succcess
+          schema:
+            type: array
+            items:
+              type: string
+        401:
+          $ref: '#/responses/401'
+  /matches/confirm:
+    put:
+      description: Updates a potential match record that a given user has confirmed they want to be matched.
+      tags:
+      - matches
+      security:
+      - JWT: []
+      responses:
+        204:
+          description: success
+        401:
+          $ref: '#/responses/401'
+  /matches/deny/:
+    put:
+      description: Updates a potential match record that a given user has denied wanting to be matched.
+      tags:
+      - matches
+      security:
+      - JWT: []
+      responses:
+        204:
+          description: success
+        401:
+          $ref: '#/responses/401'
+  
+# Added by API Auto Mocking Plugin
+host: virtserver.swaggerhub.com
+basePath: /dsudia/montessori-match/1
+schemes:
+- https
+consumes:
+- application/json
+produces:
+- application/json
+
+definitions:
+  MatchingProfile:
+   type: object
+   required: [
+     'ageRanges',
+     'ageRangesWeight',
+     'cals',
+     'calsWeight',
+     'orgTypes',
+     'orgTypesWeight',
+     'locTypes',
+     'locTypesWeight',
+     'edTypes',
+     'edTypesWeight',
+     'sizes',
+     'sizesWeight',
+     'trainings',
+     'trainingsWeight',
+     'traits',
+     'traitsWeight',
+     'states',
+     'statesWeight',
+   ]
+   properties:
+    id:
+      type: string
+    ageRanges:
+      type: array
+      items:
+        type: number
+    ageRangesWeight:
+      type: number
+    cals:
+      type: array
+      items:
+        type: number
+    calsWeight:
+      type: number
+    orgTypes:
+      type: array
+      items:
+        type: number
+    orgTypesWeight:
+      type: number
+    locTypes:
+      type: array
+      items:
+        type: number
+    locTypesWeight:
+      type: number
+    edTypes:
+      type: array
+      items:
+        type: number
+    edTypesWeight:
+      type: number
+    sizes:
+      type: array
+      items:
+        type: number
+    sizesWeight:
+      type: number
+    trainings:
+      type: array
+      items:
+        type: number
+    trainingsWeight:
+      type: number
+    traits:
+      type: array
+      items:
+        type: number
+    traitsWeight:
+      type: number
+    states:
+      type: array
+      items:
+        type: number
+    statesWeight:
+      type: number
+  Error:
+    type: object
+    properties:
+      code:
+        type: number
+      message:
+        type: string
+        
+parameters:
+  AuthToken:
+    description: JWT token containing the user's ID in the body.
+    name: authenticationToken
+    in: header
+    type: string
+    required: true
+    
+responses:
+  401:
+    description: bad credentials
+    schema:
+      $ref: '#/definitions/Error'
+  422:
+    description: bad parameters
+    schema:
+      $ref: '#/definitions/Error' 
+  415:
+    description: unsupported media type
+    schema:
+      $ref: '#/definitions/Error'

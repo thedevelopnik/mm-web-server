@@ -1,4 +1,4 @@
-import { StringKey, SchoolRegistrant, EducatorRegistrant } from './../interfaces';
+import { StringKey, Registrant } from './../interfaces';
 import { camel, snake } from 'change-case';
 import { pick, omit } from 'ramda';
 
@@ -22,7 +22,7 @@ export function convertObjectKeysToSnake(obj: StringKey): StringKey {
 }
 
 
-export function splitAccountCreationObject(obj: SchoolRegistrant | EducatorRegistrant) {
+export function splitAccountCreationObject(obj: Registrant) {
   const loginInfo = ['email', 'password'];
   return [lowercaseEmail(<LoginDetails> pick(loginInfo, obj)), omit(loginInfo, obj)];
 }

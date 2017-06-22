@@ -18,7 +18,7 @@
         "indent": [ true, "spaces" ],
         "interface-name": [true, "never-prefix"],
         "label-position": true,
-        "max-line-length": [ true, 120 ],
+        "max-line-length": [ true, 150 ],
         "member-ordering": [
             true,
             "public-before-private",
