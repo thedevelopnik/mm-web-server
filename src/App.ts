@@ -19,7 +19,7 @@ class App {
 
     private middleware(): void {
         this.express.use(logger('dev'));
-        this.express.use(cors())
+        this.express.use(cors());
         this.express.use(bodyParser.json());
         this.express.use(bodyParser.urlencoded({ extended: false}));
         this.express.use(bodyParser.urlencoded({ extended: false }));
@@ -28,10 +28,9 @@ class App {
             secret: process.env.JWT_SECRET || 'shhhh',
             maxAge: '1 day'
         }).unless({
-            ext: ['.html', '.js', '.ico', '.png'],
             path: [
                 '/',
-                { url: '/auth', methods: ['GET', 'POST'] }
+                { url: '/api/v1/auth', methods: ['GET', 'POST'] }
             ]
         }));
     }
@@ -48,7 +47,7 @@ class App {
                 res.status(500).json({
                     code: 5000,
                     message: 'Unknown server error, please contact support @ hello@montessorimatch.com'
-                })
+                });
             }
         });
     }

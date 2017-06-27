@@ -61,17 +61,17 @@ export class AuthRouter {
     }
 
     login(req: Request, res: Response, next?: NextFunction, q: AuthQuerier = new AuthQuerier()) {
-        if (!req.body.email || !req.body.password) {
+        if (!req.query.email || !req.query.password) {
             res.status(400).json(MissingParameters);
             return;
         }
-        if (!validator.isEmail(req.body.email)) {
+        if (!validator.isEmail(req.query.email)) {
             return res.status(400).json(InvalidParameters);
         }
-        if (!schema.validate(req.body.password)) {
+        if (!schema.validate(req.query.password)) {
             return res.status(400).json(InvalidParameters);
         }
-        const loginDetails = lowercaseEmail(req.body);
+        const loginDetails = lowercaseEmail(req.query);
         return q.findMemberByEmail(loginDetails.email)
         .then((member: Registrant) => {
             const valid = bcrypt.compareSync(loginDetails.password, member.password);
@@ -122,9 +122,9 @@ export class AuthRouter {
     }
 
     init() {
-        this.router.post('/auth', this.newUser.bind(this));
-        this.router.get('/auth', this.login.bind(this));
-        this.router.put('/auth', this.changePassword.bind(this));
+        this.router.post('/', this.newUser.bind(this));
+        this.router.get('/', this.login.bind(this));
+        this.router.put('/', this.changePassword.bind(this));
     }
 
     // private loginSchool(loginProfile: LoginProfile, req: Request, res: Response, next: NextFunction) {
